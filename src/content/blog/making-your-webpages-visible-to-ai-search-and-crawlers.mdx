@@ -1,0 +1,75 @@
+---
+title: "Making your web pages visible to AI search and Crawlers"
+description: "I almost shipped an invisible blog"
+date: "2026-07-16"
+category: "search-ai"
+tags: ["seo", "crawlers", "ai-search"]
+---
+
+I've been a developer longer than I've been an SEO professional. After building my brand's blog, I decided to check something simple yet critical: Could search engines and AI tools like ChatGPT actually "see" it?
+
+The answer was a resounding NO. But why?
+
+## The Problem
+
+![How Humans see the page](/blog/making-your-webpages-visible-to-ai-search-and-crawlers/1784192508386-8846340352df517e-Screenshot-From-2026-07-16-01-51-32.png)
+_How Humans see the page_
+
+For a human, the blog looked perfectly fine. The layout was clean, and the text was all there. However, when I looked at what search engines and AI crawler sees, It's a completely different story.
+
+![How AI tools and Crawlers see the same page](/blog/making-your-webpages-visible-to-ai-search-and-crawlers/1784192581573-2ada21fc7d058a09-Screenshot-From-2026-07-16-01-49-44.png)
+_How AI tools and Crawlers see the same page_
+
+You see, crawlers don't browse pages the way we do. They send an HTTP request to a server and capture the very first thing that server sends back to them; even if it is just a loading screen. They read the content of the HTML top to bottom, often without ever executing your JavaScript.
+
+If your content loads after a client-side JavaScript fetch, then it is effectively invisible to most crawlers.
+
+## How do you make webpages visible to AI search and Crawlers?
+
+For my blog, I implemented four layers of optimization to ensure
+
+### 1. Server components:
+
+My blog sub-folder and each individual blog post are all [server side components](https://nextjs.org/docs/13/app/building-your-application/rendering/server-components). Because of this, their data is fetched during the build time.
+
+```typescript
+// blog/page.tsx — nextjs server component
+export default async function BlogPage() {
+const posts = await getAllPosts(); // fetches on the server
+return <>{/* render posts */}</>;
+}
+```
+
+This matters because crawlers read HTML, not JavaScript output. If your data fetch happens in the browser, the crawler never waits around for it. Server components fetch the data before the page even reaches the browser, so what gets sent out is already whole.
+
+### 2. Incremental Static Regeneration (ISR)
+
+Now this isn’t as complicated as it sounds. It allows you to update static content without rebuilding the entire site all over. The first visitor triggers a static render that gets cached, and for the next 60 seconds, every visitor gets the cached version instantly.
+
+After 60 seconds, the first request triggers a background regeneration while still serving the stale cache. This provides static site speed with dynamic freshness which is critical for SEO and achieving a fast Time to First Byte (TTFB), which measures the delay between a request and the start of the server response.
+
+### 3. Pre-rendering Post Slugs
+
+At build time, each individual blog post is pre-rendered based on its unique slug. This ensures every blog post gets a static HTML file. New posts added after building still work because Next.js falls back to ISR on the first request.
+
+### 4. No Silent Failures: Loud 404 Not Found
+
+This was the key indexability fix. If a page is not found, a 404 error is triggered. Previously, an invalid slug would render an empty page with a 200 OK status, causing Google to index it as a valid page.
+
+Now it returns a proper 404, so crawlers understand the page doesn't exist and treat it accordingly.
+
+## Results
+
+This obviously won't be complete if i don't attach some results.
+
+After I resolved all the listed issues on my site's blog page, my first blog appeared on Google SERP result. Four fixes, one outcome. My blog post didn't just load fast. It got seen.
+
+![Ranking 16th position on Serp as at July 16th](/blog/making-your-webpages-visible-to-ai-search-and-crawlers/1784194774972-5d798fd862e54b60-premordial-desire.png)
+_Ranking 16th position on Serp as at July 16th_
+
+Getting indexed was step one. The next question was whether the page held up once crawlers actually looked at it closely.
+
+![Excellent performance score on desktop for my blog](/blog/making-your-webpages-visible-to-ai-search-and-crawlers/1784194980079-9b6a6ec0d78f8c9f-Screenshot-From-2026-07-16-08-35-38.png)
+_Excellent performance score on desktop for my blog_
+
+If your content isn't rendering server-side, it doesn't matter how good it is. The bots won't see it, and if the bots can't see it, nobody finds it.

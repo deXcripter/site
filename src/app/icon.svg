@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .base { fill: #161616; }
+    .jump { fill: #0b7468; }
+    @media (prefers-color-scheme: dark) {
+      .base { fill: #f2f1ed; }
+      .jump { fill: #45d3c0; }
+    }
+  </style>
+  <defs>
+    <clipPath id="l"><path d="M0 0H18.6L10 17.6L20.4 15.2L11.6 32H0Z"/></clipPath>
+    <clipPath id="r"><path d="M18.6 0H32V32H11.6L20.4 15.2L10 17.6Z"/></clipPath>
+  </defs>
+  <rect class="base" x="1.5" y="3.5" width="27" height="27" rx="7" clip-path="url(#l)"/>
+  <g transform="translate(1.8 -1.8)">
+    <rect class="jump" x="1.5" y="3.5" width="27" height="27" rx="7" clip-path="url(#r)"/>
+  </g>
+</svg>
