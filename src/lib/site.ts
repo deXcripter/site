@@ -5,6 +5,8 @@ export const site = {
   givenName: "Johnpaul",
   familyName: "Nnaji",
   handle: "dexcripter",
+  // Drop a square photo in /public and set this to its path (e.g. "/avatar.jpg") to replace the logo avatar.
+  avatar: null as string | null,
   twitter: "@dexcripter",
   url: "https://www.dexcripter.me",
   locale: "en_US",

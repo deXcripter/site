@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Avatar from "@/components/avatar";
 import { ArrowIcon, GitHubIcon, LinkedInIcon, RssIcon, XIcon } from "@/components/icons";
 import PostList from "@/components/post-list";
 import { projects, work } from "@/content/experience";
@@ -51,14 +52,17 @@ export default function Home() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <section className="pt-28 sm:pt-40">
-        <p className="rise glass inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-muted">
-          <span className="relative flex size-2">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-60 motion-reduce:hidden" />
-            <span className="relative size-2 rounded-full bg-accent" />
-          </span>
-          Currently building SEORCE
-        </p>
+      <section className="pt-24 sm:pt-36">
+        <div className="rise flex items-center gap-4">
+          <Avatar />
+          <p className="glass inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-muted">
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-60 motion-reduce:hidden" />
+              <span className="relative size-2 rounded-full bg-accent" />
+            </span>
+            Currently building SEORCE
+          </p>
+        </div>
         <h1 className="rise mt-7 text-[3.25rem] leading-[0.95] font-semibold tracking-[-0.05em] sm:text-7xl" style={stagger(1)}>
           Johnpaul Nnaji
         </h1>

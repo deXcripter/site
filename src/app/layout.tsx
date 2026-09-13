@@ -62,6 +62,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 familyName: site.familyName,
                 alternateName: site.handle,
                 url: site.url,
+                ...(site.avatar ? { image: `${site.url}${site.avatar}` } : {}),
                 jobTitle: "Software Engineer",
                 description: site.description,
                 worksFor: { "@type": "Organization", name: "SEORCE" },
@@ -84,7 +85,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Script id="plausible-init" strategy="lazyOnload">
           {`window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()`}
         </Script>
-        <Script src="https://cdn.exeolabs.xyz/script.js" strategy="lazyOnload" data-site="334616476419637248" />
+        <Script src="https://cdn.exeolabs.com/script.js" strategy="afterInteractive" data-site="334616476419637248" />
       </body>
     </html>
   );
