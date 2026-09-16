@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { gallery } from "@/content/gallery";
+import GalleryLightbox from "@/components/gallery-lightbox";
 import { stagger } from "@/lib/motion";
 import { pageMeta } from "@/lib/site";
 
@@ -29,24 +29,7 @@ export default function GalleryPage() {
           <p className="mt-1 text-sm text-muted">Photos are on their way.</p>
         </div>
       ) : (
-        <ul className="rise mt-14 columns-1 gap-3 sm:columns-2 lg:columns-3" style={stagger(1)}>
-          {gallery.map((photo, index) => (
-            <li key={photo.src} className="mb-3 break-inside-avoid">
-              <figure>
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  width={photo.width}
-                  height={photo.height}
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  loading={index < 3 ? "eager" : "lazy"}
-                  className="h-auto w-full rounded-xl border border-line"
-                />
-                {photo.caption && <figcaption className="mt-2 font-mono text-xs text-muted">{photo.caption}</figcaption>}
-              </figure>
-            </li>
-          ))}
-        </ul>
+        <GalleryLightbox photos={gallery} />
       )}
     </div>
   );

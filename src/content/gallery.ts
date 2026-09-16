@@ -31,6 +31,6 @@ export const gallery: GalleryItem[] = [
     width: 2048,
     height: 1542,
     date: "2024-02-01",
-    caption: "At the university",
+    caption: "At the university with bootcamp colleagues",
   },
 ];
