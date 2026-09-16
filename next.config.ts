@@ -4,7 +4,10 @@ import createMDX from "@next/mdx";
 const nextConfig: NextConfig = {
   pageExtensions: ["ts", "tsx", "mdx"],
   images: {
-    remotePatterns: [{ protocol: "https", hostname: "**.r2.dev" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "**.r2.dev" },
+      { protocol: "https", hostname: "images.dexcripter.me" },
+    ],
   },
   async redirects() {
     return [
