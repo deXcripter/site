@@ -8,6 +8,7 @@
  */
 
 import { query, tableRef, bigQueryConfig } from "@/lib/bigquery";
+import { botMeta, type BotKind } from "@/lib/bots";
 
 export type Signal = "edge" | "js-fetch";
 
@@ -81,6 +82,8 @@ export type PublicLogRow = {
   signal: string;
   bot_name: string;
   bot_vendor: string;
+  /** "training" and "on-demand" are AI; "search" and "other" are not. */
+  kind: BotKind;
   is_ai_bot: number;
   verified: number;
   asn_org: string;
@@ -118,6 +121,7 @@ export async function recentHits(limit = 100): Promise<PublicLogRow[]> {
     signal: r.signal ?? "",
     bot_name: r.bot_name ?? "",
     bot_vendor: r.bot_vendor ?? "",
+    kind: botMeta(r.bot_name ?? "").kind,
     is_ai_bot: Number(r.is_ai_bot ?? 0),
     verified: Number(r.verified ?? 0),
     asn_org: r.asn_org ?? "",
@@ -130,6 +134,8 @@ export async function recentHits(limit = 100): Promise<PublicLogRow[]> {
 export type RenderVerdict = {
   bot_name: string;
   bot_vendor: string;
+  kind: BotKind;
+  is_ai_bot: number;
   requests: number;
   js_executions: number;
   verified_requests: number;
@@ -159,12 +165,17 @@ export async function renderVerdicts(): Promise<RenderVerdict[]> {
 
   const rows = await query(sql);
 
-  return rows.map((r) => ({
-    bot_name: r.bot_name ?? "",
-    bot_vendor: r.bot_vendor ?? "",
-    requests: Number(r.requests ?? 0),
-    js_executions: Number(r.js_executions ?? 0),
-    verified_requests: Number(r.verified_requests ?? 0),
-    last_seen: r.last_seen ?? "",
-  }));
+  return rows.map((r) => {
+    const meta = botMeta(r.bot_name ?? "");
+    return {
+      bot_name: r.bot_name ?? "",
+      bot_vendor: r.bot_vendor ?? "",
+      kind: meta.kind,
+      is_ai_bot: meta.ai ? 1 : 0,
+      requests: Number(r.requests ?? 0),
+      js_executions: Number(r.js_executions ?? 0),
+      verified_requests: Number(r.verified_requests ?? 0),
+      last_seen: r.last_seen ?? "",
+    };
+  });
 }

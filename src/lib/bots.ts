@@ -99,6 +99,13 @@ export function identifyBot(userAgent: string): BotMatch | null {
   return null;
 }
 
+/** Look up a bot's classification from the name stored in the log. */
+export function botMeta(name: string): { kind: BotKind; ai: boolean } {
+  const sig = BOT_SIGNATURES.find((entry) => entry.name === name);
+  if (sig) return { kind: sig.kind, ai: sig.ai };
+  return { kind: "other", ai: false };
+}
+
 /**
  * Autonomous System numbers published by AI vendors for their crawlers.
  * A User-Agent alone is trivially spoofed, so an ASN match is what makes a hit
