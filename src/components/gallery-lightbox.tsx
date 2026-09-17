@@ -3,13 +3,29 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { GalleryItem } from "@/content/gallery";
+import { stagger } from "@/lib/motion";
 
 type GalleryLightboxProps = {
   photos: GalleryItem[];
 };
 
+type YearGroup = { year: string; photos: GalleryItem[] };
+
+// `photos` arrives newest-first, so each year keeps that order and the groups do too.
+function groupByYear(photos: GalleryItem[]): YearGroup[] {
+  const groups: YearGroup[] = [];
+  for (const photo of photos) {
+    const year = photo.date.slice(0, 4);
+    const current = groups.at(-1);
+    if (current?.year === year) current.photos.push(photo);
+    else groups.push({ year, photos: [photo] });
+  }
+  return groups;
+}
+
 export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryItem | null>(null);
+  const groups = groupByYear(photos);
 
   useEffect(() => {
     if (!selectedPhoto) return;
@@ -28,31 +44,51 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
 
   return (
     <>
-      <ul className="rise mt-14 columns-1 gap-3 sm:columns-2 lg:columns-3" style={{ "--i": 1 } as React.CSSProperties}>
-        {photos.map((photo, index) => (
-          <li key={photo.src} className="mb-3 break-inside-avoid">
-            <figure>
-              <button
-                type="button"
-                onClick={() => setSelectedPhoto(photo)}
-                className="group block w-full cursor-zoom-in text-left"
-                aria-label={`Expand photo: ${photo.alt}`}
-              >
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  width={photo.width}
-                  height={photo.height}
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  loading={index < 3 ? "eager" : "lazy"}
-                  className="h-auto w-full rounded-xl border border-line transition duration-300 group-hover:brightness-90"
-                />
-              </button>
-              {photo.caption && <figcaption className="mt-2 font-mono text-xs text-muted">{photo.caption}</figcaption>}
-            </figure>
-          </li>
+      <div className="mt-14">
+        {groups.map((group, groupIndex) => (
+          <section
+            key={group.year}
+            aria-labelledby={`year-${group.year}`}
+            className="rise grid gap-x-8 gap-y-4 border-t border-line pt-6 pb-10 sm:grid-cols-[6rem_1fr]"
+            style={stagger(groupIndex + 1)}
+          >
+            <div className="sm:sticky sm:top-24 sm:self-start">
+              <h2 id={`year-${group.year}`} className="font-mono text-sm tabular-nums tracking-[0.14em] text-fg">
+                {group.year}
+              </h2>
+              <p className="mt-1 font-mono text-xs text-muted">
+                {group.photos.length} {group.photos.length === 1 ? "photo" : "photos"}
+              </p>
+            </div>
+
+            <ul className="columns-1 gap-3 sm:columns-2 lg:columns-3">
+              {group.photos.map((photo) => (
+                <li key={photo.src} className="mb-3 break-inside-avoid">
+                  <figure>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPhoto(photo)}
+                      className="group block w-full cursor-zoom-in text-left"
+                      aria-label={`Expand photo: ${photo.alt}`}
+                    >
+                      <Image
+                        src={photo.src}
+                        alt={photo.alt}
+                        width={photo.width}
+                        height={photo.height}
+                        sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
+                        loading={photos.indexOf(photo) < 3 ? "eager" : "lazy"}
+                        className="h-auto w-full rounded-xl border border-line transition duration-300 group-hover:brightness-90"
+                      />
+                    </button>
+                    {photo.caption && <figcaption className="mt-2 font-mono text-xs text-muted">{photo.caption}</figcaption>}
+                  </figure>
+                </li>
+              ))}
+            </ul>
+          </section>
         ))}
-      </ul>
+      </div>
 
       {selectedPhoto && (
         <div

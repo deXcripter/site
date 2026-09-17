@@ -8,7 +8,7 @@ export type GalleryItem = {
 };
 
 // Host images on Cloudflare R2 and add the bucket's domain to images.remotePatterns in next.config.ts.
-export const gallery: GalleryItem[] = [
+const photos: GalleryItem[] = [
   {
     src: "https://images.dexcripter.me/uploads/1783323291147-caca612ec91790ab-50-_MG_2011.jpg",
     caption: "Speaking about improving productivity with AI",
@@ -34,3 +34,6 @@ export const gallery: GalleryItem[] = [
     caption: "At the university with bootcamp colleagues",
   },
 ];
+
+// Newest first, so entries can be appended in any order above.
+export const gallery: GalleryItem[] = [...photos].sort((a, b) => b.date.localeCompare(a.date));

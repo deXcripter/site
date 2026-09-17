@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import Logo from "./logo";
 import ThemeToggle from "./theme-toggle";
 
@@ -15,8 +16,41 @@ const links = [
 const item =
   "rounded-full px-2.5 py-2 text-[13px] font-medium transition-colors duration-300 sm:px-3.5 sm:text-sm";
 
+function useHideOnScrollDown() {
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
+
+  useEffect(() => {
+    lastY.current = window.scrollY;
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const y = Math.max(window.scrollY, 0);
+      const delta = y - lastY.current;
+      // Ignore jitter and the rubber-band zone at the very top.
+      if (Math.abs(delta) < 6) return;
+      lastY.current = y;
+      setHidden(delta > 0 && y > 96);
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  return hidden;
+}
+
 export default function Dock() {
   const pathname = usePathname();
+  const hidden = useHideOnScrollDown();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const state = (href: string) => (isActive(href) ? "bg-fg text-bg" : "text-muted hover:text-fg");
 
@@ -25,7 +59,10 @@ export default function Dock() {
       aria-label="Primary"
       className="pointer-events-none fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 flex justify-center px-4"
     >
-      <div className="glass pointer-events-auto flex items-center gap-0.5 rounded-full p-1.5">
+      <div
+        data-hidden={hidden ? "" : undefined}
+        className="glass pointer-events-auto flex items-center gap-0.5 rounded-full p-1.5 transition-[translate,scale,opacity,filter] duration-[550ms] ease-[cubic-bezier(0.22,1.4,0.36,1)] will-change-transform data-hidden:pointer-events-none data-hidden:translate-y-[160%] data-hidden:scale-90 data-hidden:opacity-0 data-hidden:blur-[6px] data-hidden:duration-300 data-hidden:ease-[cubic-bezier(0.4,0,0.9,0.3)] motion-reduce:transition-none"
+      >
         <Link
           href="/"
           aria-label="Home"
