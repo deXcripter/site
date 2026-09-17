@@ -107,20 +107,38 @@ export function botMeta(name: string): { kind: BotKind; ai: boolean } {
 }
 
 /**
- * Autonomous System numbers published by AI vendors for their crawlers.
- * A User-Agent alone is trivially spoofed, so an ASN match is what makes a hit
- * defensible. Absence of a match means "unverified", not "fake".
+ * Autonomous System numbers believed to be used by each vendor's crawlers.
+ *
+ * A User-Agent alone is trivially spoofed, so a network match is what makes a
+ * hit defensible. Absence of a match means "unverified", not "fake".
+ *
+ * IMPORTANT LIMITATIONS, which matter before citing any of this publicly:
+ *
+ *  1. Shared cloud ASNs are deliberately excluded. AWS (14618, 16509),
+ *     DigitalOcean (14061) and similar host millions of unrelated customers,
+ *     so matching them would let anyone renting a VM pass as a vendor's
+ *     crawler. Excluding them causes false negatives (a genuine crawler on
+ *     that cloud reads as unverified) but prevents false positives, which is
+ *     the right trade when the log is public.
+ *
+ *  2. An ASN is coarser than the CIDR ranges vendors actually publish. The
+ *     stronger check is to test the request IP against those published ranges
+ *     (OpenAI, Anthropic and Perplexity each serve a JSON list) at request
+ *     time, store only the resulting boolean, and discard the address. That
+ *     keeps this privacy-preserving while being materially more accurate.
+ *
+ *  3. These numbers are unverified against vendor documentation. Confirm each
+ *     one before treating a "verified" badge as evidence in writing.
  */
 export const VENDOR_ASNS: Record<string, number[]> = {
-  OpenAI: [20473, 396982],
-  Anthropic: [399358, 14618, 16509],
-  Perplexity: [396982, 14061],
-  Google: [15169, 396982],
+  OpenAI: [20473],
+  Anthropic: [399358],
+  Perplexity: [396982],
+  Google: [15169],
   Microsoft: [8075],
   Apple: [714, 6185],
   Meta: [32934],
   ByteDance: [396986, 138699],
-  Amazon: [16509, 14618],
 };
 
 /** True when the request's ASN is one the claimed vendor is known to use. */

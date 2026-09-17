@@ -142,10 +142,17 @@ export type RenderVerdict = {
   last_seen: string;
 };
 
+/** The only path carrying JavaScript probes, so the only fair test of rendering. */
+export const LAB_PATH = "/lab/ai-crawler";
+
 /**
- * The core result: per bot, how many times it requested a page versus how many
- * times its JavaScript actually ran. Zero executions against a positive
+ * The core result: per bot, how many times it requested the lab page versus how
+ * many times its JavaScript actually ran. Zero executions against a positive
  * request count is a bot that read the HTML and ignored the script.
+ *
+ * Restricted to the lab page on purpose. Other pages carry no probe, so a bot
+ * that only ever visited the homepage would otherwise be reported as "no JS
+ * execution" when it was never given a script to run.
  */
 export async function renderVerdicts(): Promise<RenderVerdict[]> {
   if (!isConfigured()) return [];
@@ -159,11 +166,13 @@ export async function renderVerdicts(): Promise<RenderVerdict[]> {
       COUNTIF(signal = 'edge' AND verified = 1) AS verified_requests,
       FORMAT_TIMESTAMP('%Y-%m-%d %H:%M:%S', MAX(ts)) AS last_seen
     FROM ${tableRef(TABLE)}
-    WHERE bot_name != ''
+    WHERE bot_name != '' AND path = @lab_path
     GROUP BY bot_name
     ORDER BY requests DESC`;
 
-  const rows = await query(sql);
+  const rows = await query(sql, [
+    { name: "lab_path", type: "STRING", value: LAB_PATH },
+  ]);
 
   return rows.map((r) => {
     const meta = botMeta(r.bot_name ?? "");
