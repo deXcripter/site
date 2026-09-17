@@ -16,8 +16,12 @@ const links = [
 const item =
   "rounded-full px-2.5 py-2 text-[13px] font-medium transition-colors duration-300 sm:px-3.5 sm:text-sm";
 
-function useHideOnScrollDown() {
-  const [hidden, setHidden] = useState(false);
+// How tall the hover strip along the bottom edge is, in pixels.
+const REVEAL_ZONE = 120;
+
+function useDockHidden() {
+  const [hiddenByScroll, setHiddenByScroll] = useState(false);
+  const [pointerNearBottom, setPointerNearBottom] = useState(false);
   const lastY = useRef(0);
 
   useEffect(() => {
@@ -31,7 +35,7 @@ function useHideOnScrollDown() {
       // Ignore jitter and the rubber-band zone at the very top.
       if (Math.abs(delta) < 6) return;
       lastY.current = y;
-      setHidden(delta > 0 && y > 96);
+      setHiddenByScroll(delta > 0 && y > 96);
     };
 
     const onScroll = () => {
@@ -45,12 +49,43 @@ function useHideOnScrollDown() {
     };
   }, []);
 
-  return hidden;
+  useEffect(() => {
+    // Touch has no resting cursor, and a tap near the bottom edge would pin
+    // the dock open with no way to dismiss it.
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    let frame = 0;
+    let y = 0;
+
+    const update = () => {
+      frame = 0;
+      setPointerNearBottom(y > window.innerHeight - REVEAL_ZONE);
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      y = event.clientY;
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    const onPointerLeave = () => setPointerNearBottom(false);
+
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    document.addEventListener("pointerleave", onPointerLeave);
+    return () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerleave", onPointerLeave);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  // Reaching for the dock wins: it stays out while the cursor rests there,
+  // even if the page keeps scrolling underneath.
+  return hiddenByScroll && !pointerNearBottom;
 }
 
 export default function Dock() {
   const pathname = usePathname();
-  const hidden = useHideOnScrollDown();
+  const hidden = useDockHidden();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const state = (href: string) => (isActive(href) ? "bg-fg text-bg" : "text-muted hover:text-fg");
 
