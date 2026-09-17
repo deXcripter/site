@@ -61,7 +61,7 @@ export const projects = [
       "SEORCE helps brands see how they show up in Google, Bing, and AI search tools like ChatGPT, Perplexity, and Gemini.",
     details: [
       { label: "Role", value: "Software Engineer" },
-      { label: "Focus", value: "Technical SEO, crawl work, AI search analytics" },
+      { label: "Focus", value: "Technical SEO, crawl work, search traffic, AI search analytics" },
       { label: "Surface", value: "Google, Bing, ChatGPT, Perplexity, Gemini" },
     ],
   },

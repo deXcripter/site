@@ -100,7 +100,7 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
             <Link href="/about" rel="author" className="font-medium text-fg hover:text-accent">
               {site.name}
             </Link>
-            , a software engineer building SEORCE.
+            {/* , a software engineer building SEORCE. */}
           </p>
         </footer>
       </article>
