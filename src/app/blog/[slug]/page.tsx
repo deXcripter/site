@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import JsonLd from "@/components/json-ld";
 import Logo from "@/components/logo";
 import PostList from "@/components/post-list";
+import PostOutline from "@/components/post-outline";
 import { stagger } from "@/lib/motion";
 import { categories, formatDate, getAllPosts, getHeadings, getPost } from "@/lib/posts";
 import { pageMeta, personId, site } from "@/lib/site";
@@ -31,7 +32,8 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
   if (!post) notFound();
 
   const { default: Content } = await import(`@/content/blog/${slug}.mdx`);
-  const outline = getHeadings(slug).filter((h) => h.level === 2);
+  const headings = getHeadings(slug);
+  const outline = headings.filter((h) => h.level === 2);
   const others = getAllPosts().filter((p) => p.slug !== slug);
   const related = [...others.filter((p) => p.category === post.category), ...others.filter((p) => p.category !== post.category)].slice(0, 2);
   const url = `${site.url}/blog/${slug}`;
@@ -69,8 +71,10 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
           </p>
         </header>
 
+        {headings.length >= 3 && <PostOutline headings={headings} />}
+
         {outline.length >= 3 && (
-          <details className="rise group mt-10 rounded-2xl border border-line px-5 py-4" style={stagger(2)}>
+          <details className="rise group mt-10 rounded-2xl border border-line px-5 py-4 xl:hidden" style={stagger(2)}>
             <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-medium">
               On this page
               <span aria-hidden className="text-muted transition-transform duration-300 group-open:rotate-45">
