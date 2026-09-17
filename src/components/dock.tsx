@@ -14,7 +14,7 @@ const links = [
 ];
 
 const item =
-  "rounded-full px-2.5 py-2 text-[13px] font-medium transition-colors duration-300 sm:px-3.5 sm:text-sm";
+  "shrink-0 rounded-full px-2 py-2 text-[13px] font-medium transition-colors duration-300 sm:px-3.5 sm:text-sm";
 
 // How tall the hover strip along the bottom edge is, in pixels.
 const REVEAL_ZONE = 120;
@@ -92,17 +92,17 @@ export default function Dock() {
   return (
     <nav
       aria-label="Primary"
-      className="pointer-events-none fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 flex justify-center px-4"
+      className="pointer-events-none fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 flex justify-center px-2 sm:px-4"
     >
       <div
         data-hidden={hidden ? "" : undefined}
-        className="glass pointer-events-auto flex items-center gap-0.5 rounded-full p-1.5 transition-[translate,scale,opacity,filter] duration-[550ms] ease-[cubic-bezier(0.22,1.4,0.36,1)] will-change-transform data-hidden:pointer-events-none data-hidden:translate-y-[160%] data-hidden:scale-90 data-hidden:opacity-0 data-hidden:blur-[6px] data-hidden:duration-300 data-hidden:ease-[cubic-bezier(0.4,0,0.9,0.3)] motion-reduce:transition-none"
+        className="glass pointer-events-auto flex max-w-full items-center gap-0 p-1 sm:gap-0.5 rounded-full sm:p-1.5 transition-[translate,scale,opacity,filter] duration-[550ms] ease-[cubic-bezier(0.22,1.4,0.36,1)] will-change-transform data-hidden:pointer-events-none data-hidden:translate-y-[160%] data-hidden:scale-90 data-hidden:opacity-0 data-hidden:blur-[6px] data-hidden:duration-300 data-hidden:ease-[cubic-bezier(0.4,0,0.9,0.3)] motion-reduce:transition-none"
       >
         <Link
           href="/"
           aria-label="Home"
           aria-current={isActive("/") ? "page" : undefined}
-          className={`grid size-9 place-items-center rounded-full transition-colors duration-300 ${isActive("/") ? "bg-fg text-bg" : "text-fg"}`}
+          className={`grid size-8 shrink-0 place-items-center rounded-full transition-colors duration-300 sm:size-9 ${isActive("/") ? "bg-fg text-bg" : "text-fg"}`}
         >
           <Logo className="size-5" />
         </Link>
@@ -111,7 +111,7 @@ export default function Dock() {
             {label}
           </Link>
         ))}
-        <span aria-hidden className="mx-1 h-5 w-px bg-line" />
+        <span aria-hidden className="mx-0.5 h-5 w-px shrink-0 bg-line sm:mx-1" />
         <ThemeToggle />
       </div>
     </nav>

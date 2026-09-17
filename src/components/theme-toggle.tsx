@@ -3,7 +3,11 @@
 export default function ThemeToggle() {
   function toggle() {
     const root = document.documentElement;
-    const next = root.dataset.theme === "dark" ? "light" : "dark";
+    // Fall back to the system preference: if the pre-paint script was blocked
+    // from writing the attribute, an unset theme is not necessarily light.
+    const current =
+      root.dataset.theme ?? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const next = current === "dark" ? "light" : "dark";
     const apply = () => {
       root.dataset.theme = next;
       try {
@@ -20,7 +24,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label="Toggle dark mode"
-      className="grid size-9 place-items-center rounded-full text-muted transition-colors duration-300 hover:text-fg"
+      className="grid size-8 shrink-0 place-items-center rounded-full text-muted transition-colors duration-300 hover:text-fg sm:size-9"
     >
       <svg aria-hidden viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" className="size-[18px] dark:hidden">
         <circle cx="10" cy="10" r="3.4" />
