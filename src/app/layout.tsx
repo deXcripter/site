@@ -35,7 +35,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <link rel="alternate" type="application/rss+xml" title={`${site.name} — Blog`} href="/feed.xml" />
       </head>
       <body className="flex min-h-dvh flex-col">
         <a

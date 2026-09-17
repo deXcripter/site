@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Avatar from "@/components/avatar";
-import { ArrowIcon, GitHubIcon, LinkedInIcon, RssIcon, XIcon } from "@/components/icons";
+import { ArrowIcon, GitHubIcon, LinkedInIcon, XIcon } from "@/components/icons";
 import PostList from "@/components/post-list";
 import { projects, work } from "@/content/experience";
 import { stagger } from "@/lib/motion";
@@ -13,7 +13,6 @@ const tiles = [
   { label: "GitHub", href: "https://github.com/dexcripter", Icon: GitHubIcon },
   { label: "X", href: "https://x.com/dexcripter", Icon: XIcon },
   { label: "LinkedIn", href: "https://linkedin.com/in/dexcripter", Icon: LinkedInIcon },
-  { label: "RSS feed", href: "/feed.xml", Icon: RssIcon },
 ];
 
 const now = [

@@ -15,11 +15,6 @@ export default function Footer() {
               </a>
             </li>
           ))}
-          <li>
-            <a href="/feed.xml" className="transition-colors hover:text-fg">
-              RSS
-            </a>
-          </li>
         </ul>
       </div>
     </footer>

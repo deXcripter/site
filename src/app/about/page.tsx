@@ -21,7 +21,7 @@ const currently = [
   },
   {
     title: "Writing as I go",
-    body: "Short posts on what I'm learning about SEO from a software engineering background. Honest notes, not expert cosplay.",
+    body: "Short posts on what I'm learning about SEO from a software engineering background.",
   },
 ];
 

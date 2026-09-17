@@ -17,6 +17,7 @@ export const site = {
     { label: "GitHub", href: "https://github.com/dexcripter" },
     { label: "X", href: "https://x.com/dexcripter" },
     { label: "LinkedIn", href: "https://linkedin.com/in/dexcripter" },
+    { label: "Instagram", href: "https://instagram.com/dexcripter" },
   ],
   knowsAbout: [
     "Search Engine Optimization",
