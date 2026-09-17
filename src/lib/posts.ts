@@ -20,7 +20,15 @@ export type Post = {
   category: Category;
   tags: string[];
   readingMinutes: number;
+  cover?: string;
 };
+
+// New posts should set `cover` in frontmatter; older ones fall back to the
+// first image in the body so every card still gets a thumbnail.
+function resolveCover(data: { cover?: string }, content: string) {
+  if (data.cover) return data.cover;
+  return content.match(/!\[[^\]]*\]\(\s*(\S+?)\s*(?:"[^"]*")?\)/)?.[1];
+}
 
 export type Heading = { id: string; text: string; level: 2 | 3 };
 
@@ -47,6 +55,7 @@ export const getAllPosts = cache((): Post[] =>
         category: data.category,
         tags: data.tags ?? [],
         readingMinutes: Math.max(1, Math.round(words / 230)),
+        cover: resolveCover(data, content),
       };
     })
     .sort((a, b) => b.date.localeCompare(a.date)),
