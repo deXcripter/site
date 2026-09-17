@@ -12,6 +12,14 @@ type GalleryLightboxProps = {
 type YearGroup = { year: string; photos: GalleryItem[] };
 
 // `photos` arrives newest-first, so each year keeps that order and the groups do too.
+// Fixed to UTC so the server and client can't disagree about the day.
+const dateFormat = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
 function groupByYear(photos: GalleryItem[]): YearGroup[] {
   const groups: YearGroup[] = [];
   for (const photo of photos) {
@@ -64,7 +72,7 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
             <ul className="columns-1 gap-3 sm:columns-2 lg:columns-3">
               {group.photos.map((photo) => (
                 <li key={photo.src} className="mb-3 break-inside-avoid">
-                  <figure>
+                  <figure className="group/photo">
                     <button
                       type="button"
                       onClick={() => setSelectedPhoto(photo)}
@@ -81,7 +89,15 @@ export default function GalleryLightbox({ photos }: GalleryLightboxProps) {
                         className="h-auto w-full rounded-xl border border-line transition duration-300 group-hover:brightness-90"
                       />
                     </button>
-                    {photo.caption && <figcaption className="mt-2 font-mono text-xs text-muted">{photo.caption}</figcaption>}
+                    <figcaption className="mt-2 font-mono text-xs text-muted">
+                      {photo.caption}
+                      <time
+                        dateTime={photo.date}
+                        className="block italic transition-opacity duration-300 sm:opacity-0 sm:group-hover/photo:opacity-100"
+                      >
+                        {dateFormat.format(new Date(`${photo.date}T00:00:00Z`))}
+                      </time>
+                    </figcaption>
                   </figure>
                 </li>
               ))}
