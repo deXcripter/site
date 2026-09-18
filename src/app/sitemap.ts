@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     { url: `${site.url}/experience`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${site.url}/about`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${site.url}/lab/ai-crawler`, changeFrequency: "monthly", priority: 0.8 },
     ...(gallery.length
       ? [{ url: `${site.url}/gallery`, changeFrequency: "weekly" as const, priority: 0.5, images: gallery.map((p) => p.src) }]
       : []),
