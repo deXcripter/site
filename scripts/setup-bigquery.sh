@@ -58,10 +58,17 @@ echo "==> Creating partitioned table ${TABLE}"
 bq mk --table \
   --time_partitioning_field ts \
   --time_partitioning_type DAY \
-  --description "One row per crawler request. signal=edge is an HTTP request; signal=js-fetch proves JavaScript ran." \
+  --description "One row per crawler request. signal=edge is an HTTP request; signal=js-fetch proves JavaScript ran. verify_status says whether the request IP matched the vendor's published crawler ranges." \
   "${PROJECT_ID}:${DATASET}.${TABLE}" \
-  ts:TIMESTAMP,request_id:STRING,signal:STRING,host:STRING,path:STRING,method:STRING,user_agent:STRING,bot_name:STRING,bot_vendor:STRING,is_ai_bot:INTEGER,verified:INTEGER,asn:INTEGER,asn_org:STRING,country:STRING,cf_ray:STRING \
+  ts:TIMESTAMP,request_id:STRING,signal:STRING,host:STRING,path:STRING,method:STRING,user_agent:STRING,bot_name:STRING,bot_vendor:STRING,is_ai_bot:INTEGER,verified:INTEGER,verify_status:STRING,asn:INTEGER,asn_org:STRING,country:STRING,cf_ray:STRING \
   || echo "    (table already exists, continuing)"
+
+# Added after the table already existed on the live deployment, so this runs
+# for both fresh and existing installs.
+echo "==> Ensuring verify_status column exists"
+bq query --use_legacy_sql=false \
+  "ALTER TABLE \`${PROJECT_ID}.${DATASET}.${TABLE}\` ADD COLUMN IF NOT EXISTS verify_status STRING" \
+  || echo "    (could not alter table, continuing)"
 
 echo "==> Creating service account ${SA_NAME}"
 gcloud iam service-accounts create "${SA_NAME}" \

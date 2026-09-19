@@ -66,14 +66,22 @@ export default async function AiCrawlerLabPage() {
             JavaScript. That is the finding this page exists to measure.
           </li>
           <li>
-            <span className="text-fg">✓</span> marks a request whose network operator
-            matches the vendor it claims to be. User agents are trivially spoofed, so
-            unverified hits are shown but should not be trusted.
+            <span className="text-fg">verified</span> marks a request whose address falls
+            inside a range the vendor publishes for its own crawlers. User agents are
+            trivially spoofed, so only verified hits can support a claim about what a
+            given bot does.
+          </li>
+          <li>
+            <span className="text-fg">unverifiable</span> is a separate state, used when a
+            vendor publishes no ranges at all. It means the claim could not be checked
+            either way — not that the bot is fake.
           </li>
         </ul>
         <p className="mt-4 text-sm leading-relaxed text-faint">
-          No IP addresses, cookies or visitor identifiers are stored. The log keeps the
-          user agent, request path, bot label, network operator and country only.
+          No IP addresses, cookies or visitor identifiers are stored. Addresses are
+          compared against the published ranges at request time and then discarded; only
+          the verdict is kept, alongside the user agent, request path, bot label, network
+          operator and country.
         </p>
       </section>
 

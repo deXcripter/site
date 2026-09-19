@@ -1,6 +1,7 @@
 import { after } from "next/server";
 import type { NextRequest } from "next/server";
-import { identifyBot, verifyVendorAsn } from "@/lib/bots";
+import { identifyBot } from "@/lib/bots";
+import { clientIp, verifyIp } from "@/lib/bot-ranges";
 import { chTimestamp, recordHit } from "@/lib/crawler-log";
 
 /**
@@ -50,10 +51,14 @@ export async function GET(request: NextRequest) {
     request.headers.get("x-crawl-asn") ??
     "";
   const asn = Number.parseInt(asnRaw, 10) || 0;
+  const ip = clientIp(request.headers);
 
   if (bot) {
-    after(() =>
-      recordHit({
+    // Same check as the proxy: a js-fetch hit is only evidence that a bot
+    // renders JavaScript if the bot is who it claims to be.
+    after(async () => {
+      const status = await verifyIp(bot.sources, ip);
+      await recordHit({
         ts: chTimestamp(),
         request_id: requestId,
         signal: "js-fetch",
@@ -64,7 +69,8 @@ export async function GET(request: NextRequest) {
         bot_name: bot.name,
         bot_vendor: bot.vendor,
         is_ai_bot: bot.ai ? 1 : 0,
-        verified: verifyVendorAsn(bot.vendor, asn) ? 1 : 0,
+        verified: status === "verified" ? 1 : 0,
+        verify_status: status,
         asn,
         asn_org:
           request.headers.get("x-vercel-ip-as-organization") ??
@@ -78,8 +84,8 @@ export async function GET(request: NextRequest) {
           request.headers.get("x-vercel-id") ??
           request.headers.get("cf-ray") ??
           "",
-      }),
-    );
+      });
+    });
   }
 
   return Response.json(

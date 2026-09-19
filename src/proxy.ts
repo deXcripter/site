@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest, NextFetchEvent } from "next/server";
-import { identifyBot, verifyVendorAsn } from "@/lib/bots";
+import { identifyBot } from "@/lib/bots";
+import { clientIp, verifyIp } from "@/lib/bot-ranges";
 import { chTimestamp, recordHit } from "@/lib/crawler-log";
 
 /**
@@ -15,15 +16,14 @@ import { chTimestamp, recordHit } from "@/lib/crawler-log";
 const HEADER_CRAWL_ID = "x-crawl-id";
 
 /**
- * The requesting network's ASN, used to verify a bot is who it claims to be.
+ * The requesting network's ASN.
  *
- * Header spelling differs by host, and not every plan exposes the ASN at all,
- * so several candidates are tried:
- *  - `x-vercel-ip-as-number` / `x-vercel-ip-asn` on Vercel, which serves this site
- *  - `x-crawl-asn` if a CDN in front is configured to inject it
+ * Recorded for context only. It is NOT used to verify a bot: every AI vendor
+ * crawls from rented cloud, so an ASN match means "somebody on Azure/AWS/GCP"
+ * rather than "this vendor". Verification is done against published CIDR
+ * ranges in `bot-ranges.ts`.
  *
- * When none is present the ASN is 0 and the hit stays unverified, which is the
- * honest outcome: without it a spoofed user agent cannot be ruled out.
+ * Header spelling differs by host, so several candidates are tried.
  */
 function readAsn(request: NextRequest): number {
   const raw =
@@ -87,13 +87,14 @@ export function proxy(request: NextRequest, event: NextFetchEvent) {
   const userAgent = request.headers.get("user-agent") ?? "";
   const bot = identifyBot(userAgent);
   const asn = readAsn(request);
+  const ip = clientIp(request.headers);
 
   if (bot) debugHeaders(request);
 
   // Only crawlers are logged. Human traffic already goes to the existing
   // analytics tracker, and storing it here would add nothing but risk.
   if (bot) {
-    const hit = {
+    const base = {
       ts: chTimestamp(),
       request_id: crawlId,
       signal: "edge" as const,
@@ -104,15 +105,24 @@ export function proxy(request: NextRequest, event: NextFetchEvent) {
       bot_name: bot.name,
       bot_vendor: bot.vendor,
       is_ai_bot: (bot.ai ? 1 : 0) as 0 | 1,
-      verified: (verifyVendorAsn(bot.vendor, asn) ? 1 : 0) as 0 | 1,
       asn,
       asn_org: readAsnOrg(request),
       country: readCountry(request),
       cf_ray: readTraceId(request),
     };
 
-    // Keeps the invocation alive without delaying the response.
-    event.waitUntil(recordHit(hit));
+    // The range check needs a network fetch on a cold cache, so it runs inside
+    // waitUntil alongside the insert: the response is never held up by it.
+    // The address is used here and then dropped; only the verdict is stored.
+    event.waitUntil(
+      verifyIp(bot.sources, ip).then((status) =>
+        recordHit({
+          ...base,
+          verified: (status === "verified" ? 1 : 0) as 0 | 1,
+          verify_status: status,
+        }),
+      ),
+    );
   }
 
   const requestHeaders = new Headers(request.headers);
