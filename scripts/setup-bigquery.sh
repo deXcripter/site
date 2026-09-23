@@ -9,13 +9,6 @@
 #
 set -euo pipefail
 
-# NOTE: BigQuery's sandbox (billing disabled) permits neither streaming inserts
-# nor DML, so the site cannot write rows at all without a billing account
-# linked. The free tier (10 GB storage, 1 TB of queries per month) still
-# applies once billing is on, so this workload should cost nothing.
-# Link one with:
-#   gcloud billing accounts list
-#   gcloud billing projects link "$PROJECT_ID" --billing-account=<ACCOUNT_ID>
 
 # --- settings -----------------------------------------------------------------
 PROJECT_ID="crested-acumen-485020-i2"   # existing empty project being repurposed

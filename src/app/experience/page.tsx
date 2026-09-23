@@ -7,6 +7,7 @@ export const metadata = pageMeta({
   description:
     "Johnpaul Nnaji's experience: software engineer at SEORCE, lead backend engineer at myBigshelf, and computer science at Nnamdi Azikiwe University.",
   path: "/experience",
+  
 });
 
 function Timeline({ id, label, entries, index }: { id: string; label: string; entries: Entry[]; index: number }) {

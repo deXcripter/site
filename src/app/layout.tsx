@@ -62,7 +62,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 alternateName: site.handle,
                 url: site.url,
                 ...(site.avatar ? { image: `${site.url}${site.avatar}` } : {}),
-                jobTitle: "Software Engineer",
+                jobTitle: "SEO Software Engineer",
                 description: site.description,
                 worksFor: { "@type": "Organization", name: "SEORCE" },
                 alumniOf: { "@type": "CollegeOrUniversity", name: "Nnamdi Azikiwe University" },
@@ -80,10 +80,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             ],
           }}
         />
-        <Script src="https://plausible.io/js/pa-mWVg99n-SGc-rg0JU2FGr.js" strategy="lazyOnload" />
-        <Script id="plausible-init" strategy="lazyOnload">
-          {`window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()`}
-        </Script>
         <Script src="https://cdn.exeolabs.com/script.js" strategy="afterInteractive" data-site="334616476419637248" />
       </body>
     </html>
