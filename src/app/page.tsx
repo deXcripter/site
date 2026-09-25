@@ -3,6 +3,7 @@ import Avatar from "@/components/avatar";
 import { ArrowIcon, GitHubIcon, LinkedInIcon, XIcon } from "@/components/icons";
 import PostList from "@/components/post-list";
 import { projects, work } from "@/content/experience";
+import { labTools } from "@/content/lab";
 import { stagger } from "@/lib/motion";
 import { getAllPosts } from "@/lib/posts";
 import { pageMeta, site } from "@/lib/site";
@@ -118,6 +119,42 @@ export default function Home() {
                 ))}
               </dl>
             </article>
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="lab" className="mt-24 sm:mt-32">
+        <SectionHeading id="lab" href="/lab" linkLabel="All experiments">
+          Lab
+        </SectionHeading>
+        <div className="mt-5 space-y-4">
+          {labTools.map((tool) => (
+            <Link
+              key={tool.slug}
+              href={tool.href}
+              className="group block rounded-3xl bg-surface p-6 ring-1 ring-line transition-all duration-300 hover:ring-fg/25 sm:p-8"
+            >
+              <div className="flex items-baseline justify-between gap-4">
+                <div className="flex items-center gap-2.5">
+                  <h3 className="text-xl font-semibold tracking-[-0.02em] group-hover:text-fg">
+                    {tool.title}
+                  </h3>
+                  <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 font-mono text-[10px] text-accent">
+                    <span className="size-1 rounded-full bg-accent" />
+                    {tool.status}
+                  </span>
+                </div>
+                <ArrowIcon className="size-4 shrink-0 text-muted transition-transform duration-300 group-hover:translate-x-1 group-hover:text-fg" />
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-pretty text-muted">{tool.description}</p>
+              <div className="mt-4 flex flex-wrap gap-1.5 font-mono text-[11px] text-muted">
+                {tool.highlights.map((h) => (
+                  <span key={h} className="rounded-md bg-bg/60 px-2.5 py-0.5 ring-1 ring-line">
+                    {h}
+                  </span>
+                ))}
+              </div>
+            </Link>
           ))}
         </div>
       </section>

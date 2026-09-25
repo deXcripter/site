@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowIcon } from "@/components/icons";
 import VisibilityChecker from "@/components/visibility-checker";
 import { pageMeta } from "@/lib/site";
 import { stagger } from "@/lib/motion";
@@ -14,7 +15,15 @@ export default function AiVisibilityPage() {
   return (
     <div className="mx-auto max-w-2xl pt-24 pb-24 sm:pt-32">
       <header className="rise">
-        <p className="font-mono text-xs tracking-[0.14em] text-muted uppercase">Lab</p>
+        <nav aria-label="Breadcrumb">
+          <p className="font-mono text-xs tracking-[0.14em] text-muted uppercase">
+            <Link href="/lab" className="transition-colors hover:text-fg">
+              Lab
+            </Link>
+            <span className="mx-2 text-line">/</span>
+            <span className="text-fg">AI Visibility</span>
+          </p>
+        </nav>
         <h1 className="mt-3 text-4xl font-semibold tracking-[-0.035em] text-balance sm:text-5xl">
           Can AI crawlers see your website?
         </h1>
@@ -65,6 +74,35 @@ export default function AiVisibilityPage() {
           does not keep a site out of AI search answers; blocking the search and user-triggered fetchers
           does. Nothing you check here is stored.
         </p>
+      </section>
+
+      <section className="rise mt-16 border-t border-line pt-8" style={stagger(3)}>
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="font-mono text-xs tracking-[0.14em] text-muted uppercase">
+            More from the Lab
+          </h2>
+          <Link
+            href="/lab"
+            className="group inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-fg"
+          >
+            All experiments
+            <ArrowIcon className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
+          </Link>
+        </div>
+        <div className="mt-4">
+          <Link
+            href="/lab/ai-crawler"
+            className="group block rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-fg/20"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="font-medium text-fg">AI Crawler Rendering Test</h3>
+              <ArrowIcon className="size-3.5 text-muted transition-transform duration-300 group-hover:translate-x-0.5 group-hover:text-fg" />
+            </div>
+            <p className="mt-1.5 text-sm leading-relaxed text-muted">
+              A live test page and real-time edge log that measures which AI bots execute JavaScript vs. reading raw HTML.
+            </p>
+          </Link>
+        </div>
       </section>
     </div>
   );

@@ -8,6 +8,7 @@ import ThemeToggle from "./theme-toggle";
 
 const links = [
   { href: "/blog", label: "Blog" },
+  { href: "/lab", label: "Lab" },
   { href: "/experience", label: "Experience" },
   { href: "/gallery", label: "Gallery" },
   { href: "/about", label: "About" },
