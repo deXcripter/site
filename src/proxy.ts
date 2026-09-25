@@ -93,7 +93,9 @@ export function proxy(request: NextRequest, event: NextFetchEvent) {
 
   // Only crawlers are logged. Human traffic already goes to the existing
   // analytics tracker, and storing it here would add nothing but risk.
-  if (bot) {
+  // Requests from the visibility checker impersonate AI bots by design and
+  // would show up as impostor hits, so they are skipped too.
+  if (bot && !request.headers.has("x-visibility-check")) {
     const base = {
       ts: chTimestamp(),
       request_id: crawlId,
